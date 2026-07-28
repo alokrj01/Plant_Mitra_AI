@@ -9,18 +9,58 @@ export const Input = ({
   name,
   className = "",
   required = false,
-  disabled = false, // Added disabled prop for completeness
-  ...props // Allows passing any other native input attributes (like min, max, etc.)
+  disabled = false,
+  ...props
 }) => {
-  
-  // Modern, spacious, and soft-focus styling
-  const baseStyles = "w-full h-12 px-4 text-gray-900 bg-gray-50/50 border border-gray-200 rounded-xl placeholder:text-gray-400 transition-all duration-300 ease-in-out";
-  
-  // Focus and Active states (Soft glowing green ring)
-  const focusStyles = "focus:bg-white focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-500/10";
-  
-  // Disabled state
-  const disabledStyles = "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100";
+  const baseStyles = `
+    w-full
+    h-12
+    px-4
+
+    rounded-xl
+
+    border
+    border-gray-200
+    dark:border-slate-700
+
+    bg-gray-50/60
+    dark:bg-slate-800/80
+
+    text-slate-900
+    dark:text-slate-100
+
+    placeholder:text-gray-400
+    dark:placeholder:text-slate-500
+
+    transition-all
+    duration-300
+    ease-in-out
+  `;
+
+  const focusStyles = `
+    focus:outline-none
+
+    focus:bg-white
+    dark:focus:bg-slate-800
+
+    focus:border-green-500
+    dark:focus:border-green-400
+
+    focus:ring-4
+    focus:ring-green-500/10
+    dark:focus:ring-green-400/20
+  `;
+
+  const disabledStyles = `
+    disabled:cursor-not-allowed
+    disabled:opacity-60
+
+    disabled:bg-gray-100
+    dark:disabled:bg-slate-900
+
+    disabled:text-gray-400
+    dark:disabled:text-slate-500
+  `;
 
   return (
     <input

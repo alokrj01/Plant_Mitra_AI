@@ -4,7 +4,7 @@ import React from "react";
 export const Card = ({ children, className = "", ...props }) => {
   return (
     <div
-      className={`bg-white/95 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/80 overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] ${className}`}
+      className={`bg-white/95 dark:bg-slate-900/90 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.35)] border border-gray-100/80 dark:border-slate-700/70 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)] ${className}`}
       {...props}
     >
       {children}
@@ -24,7 +24,8 @@ export const CardHeader = ({ children, className = "", ...props }) => {
 // 3. Card Title (Bold & Tight Typography)
 export const CardTitle = ({ children, className = "", ...props }) => {
   return (
-    <h3 className={`text-2xl font-bold tracking-tight text-gray-900 leading-none ${className}`} {...props}>
+    <h3 className={`text-2xl font-bold tracking-tight  text-slate-900
+        dark:text-white leading-none ${className}`} {...props}>
       {children}
     </h3>
   );
@@ -33,7 +34,8 @@ export const CardTitle = ({ children, className = "", ...props }) => {
 // 4. Card Description (Muted Text)
 export const CardDescription = ({ children, className = "", ...props }) => {
   return (
-    <p className={`text-sm text-gray-500 font-medium ${className}`} {...props}>
+    <p className={`text-sm text-slate-500
+        dark:text-slate-400 font-medium ${className}`} {...props}>
       {children}
     </p>
   );

@@ -4,8 +4,10 @@ import { Button } from './ui/button.jsx';
 import { Input } from './ui/input.jsx';
 import { Label } from './ui/label.jsx';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card.jsx';
-import { Leaf, Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
+import AuthLayout from './auth/AuthLayout.jsx';
+import AuthFooter from './auth/AuthFooter.jsx';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -53,29 +55,8 @@ const Login = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 bg-gray-50 overflow-hidden">
-      
-      {/* Background Decorative Blobs */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-green-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-      <div className="absolute top-[20%] right-[-10%] w-96 h-96 bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-      <div className="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-teal-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+      <AuthLayout>
 
-      <div className="relative w-full max-w-[420px] z-10">
-        
-        {/* Header Section */}
-        <div className="text-center mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="flex justify-center mb-5">
-            <div className="relative group cursor-pointer">
-              <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-              <div className="relative bg-gradient-to-br from-green-500 to-emerald-600 p-4 rounded-full shadow-xl">
-                <Leaf className="h-8 w-8 text-white" />
-              </div>
-            </div>
-          </div>
-          <h1 className="font-display text-4xl font-extrabold text-gray-900 tracking-tight mb-2">PlantMitra AI</h1>
-          <p className="font-sans text-gray-500 font-medium tracking-wide">Advanced Plant Disease Detection</p>
-        </div>
-        
         <Card className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
           <CardHeader className="text-center items-center">
             <CardTitle className='font-display text-2xl'>Welcome Back</CardTitle>
@@ -88,10 +69,10 @@ const Login = () => {
               {/* Email Input */}
               <div>
                 <Label htmlFor="email"
-                className='font-sans font-medium text-slate-700'>Email Address</Label>
+                className="font-sans font-medium text-slate-700 dark:text-slate-300">Email Address</Label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-gray-400 group-focus-within:text-green-500 transition-colors" />
+                    <Mail className="h-5 w-5 text-slate-400 dark:text-slate-500 group-focus-within:text-green-500 transition-colors" />
                   </div>
                   
                   <Input
@@ -107,14 +88,14 @@ const Login = () => {
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <Label htmlFor="password" className="font-sans font-medium text-slate-700 mb-0">Password</Label>
-                  <Link to="#" className="font-sans text-sm font-medium text-green-600 hover:text-green-700 hover:underline">
+                  <Label htmlFor="password" className="font-sans font-medium text-slate-700 dark:text-slate-300 mb-0">Password</Label>
+                  <Link to="#" className="font-sans text-sm font-medium text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 hover:underline">
                     Forgot password?
                   </Link>
                 </div>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-gray-400 group-focus-within:text-green-500 transition-colors" />
+                    <Lock className="h-5 w-5 text-slate-400 dark:text-slate-500 group-focus-within:text-green-500 transition-colors" />
                   </div>
                   <Input
                     id="password"
@@ -128,7 +109,7 @@ const Login = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
@@ -152,30 +133,15 @@ const Login = () => {
             </form>
             
             {/* Footer Text */}
-            <div className="mt-8">
-              {/* Divider Line */}
-              <div className="relative">
-                
-                <div className="absolute inset-0 flex items-center pointer-events-none">
-                  <div className="w-full border-t border-gray-200"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="font-sans px-2 bg-white/95 text-gray-500">New to PlantMitra AI?</span>
-                </div>
-              </div>
+            <AuthFooter
+             text="New to PlantMitra AI?"
+             link="/register"
+             linkText="Create an account"
+            />
               
-              {/* Registration Link */}
-              <Link 
-                to="/register" 
-                className="font-display mt-6 relative z-10 flex items-center justify-center w-full h-12 rounded-xl border-2 border-green-100 text-green-700 font-semibold hover:bg-green-50 hover:border-green-200 hover:scale-[0.98] transition-all duration-300"
-              >
-                Create an account
-              </Link>
-            </div>
           </CardContent>
         </Card>
-      </div>
-    </div>
+    </AuthLayout>
   );
 };
 

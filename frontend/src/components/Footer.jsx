@@ -6,10 +6,12 @@ const Footer = () => {
 
   return (
     // Deep dark slate background for premium contrast
-    <footer className="relative bg-slate-950 text-slate-200 pt-16 pb-8 overflow-hidden mt-auto">
+    <footer className="relative bg-slate-950 border-t border-slate-800 text-slate-200 pt-16 pb-8 overflow-hidden mt-auto">
       
       {/* Decorative Top Glow (Subtle Emerald glow at the top edge) */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-12 bg-emerald-500/10 blur-[80px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-px bg-gradient-to-r from-transparent via-green-500/40 to-transparent"/>
+
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-16 bg-emerald-500/12 blur-[90px] pointer-events-none"/>
 
       <div className="container mx-auto px-6 max-w-6xl relative z-10">
         

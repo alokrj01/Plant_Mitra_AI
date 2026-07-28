@@ -10,22 +10,67 @@ export const Textarea = ({
   className = "",
   required = false,
   disabled = false,
-  ...props // Allows passing maxLength, spellCheck, etc.
+  ...props
 }) => {
-  
-  // 1. Base Styles: Matches Input.jsx (soft background, proper padding, rounded-xl)
-  const baseStyles = "w-full p-4 text-gray-900 bg-gray-50/50 border border-gray-200 rounded-xl placeholder:text-gray-400 transition-all duration-300 ease-in-out";
-  
-  // 2. Focus & Active States: Pure white background with a glowing green ring
-  const focusStyles = "focus:bg-white focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-500/10";
-  
-  // 3. Disabled State: Clear visual feedback when input is blocked
-  const disabledStyles = "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100";
+  // Base Styles
+  const baseStyles = `
+    w-full
+    p-4
 
-  // 4. Responsive & Layout Limits
-  // resize-y: User can make it taller but not wider (keeps mobile layout safe)
-  // min-h & max-h: Prevents it from becoming too small or absurdly large
-  const layoutStyles = "resize-y min-h-[120px] max-h-[400px] sm:text-sm";
+    rounded-xl
+
+    border
+    border-gray-200
+    dark:border-slate-700
+
+    bg-gray-50/60
+    dark:bg-slate-800/80
+
+    text-slate-900
+    dark:text-slate-100
+
+    placeholder:text-gray-400
+    dark:placeholder:text-slate-500
+
+    transition-all
+    duration-300
+    ease-in-out
+  `;
+
+  // Focus Styles
+  const focusStyles = `
+    focus:outline-none
+
+    focus:bg-white
+    dark:focus:bg-slate-800
+
+    focus:border-green-500
+    dark:focus:border-green-400
+
+    focus:ring-4
+    focus:ring-green-500/10
+    dark:focus:ring-green-400/20
+  `;
+
+  // Disabled Styles
+  const disabledStyles = `
+    disabled:cursor-not-allowed
+    disabled:opacity-60
+
+    disabled:bg-gray-100
+    dark:disabled:bg-slate-900
+
+    disabled:text-gray-400
+    dark:disabled:text-slate-500
+  `;
+
+  // Layout
+  const layoutStyles = `
+    resize-y
+    min-h-[120px]
+    max-h-[400px]
+    sm:text-sm
+  `;
 
   return (
     <textarea
@@ -37,7 +82,13 @@ export const Textarea = ({
       rows={rows}
       required={required}
       disabled={disabled}
-      className={`${baseStyles} ${focusStyles} ${disabledStyles} ${layoutStyles} ${className}`}
+      className={`
+        ${baseStyles}
+        ${focusStyles}
+        ${disabledStyles}
+        ${layoutStyles}
+        ${className}
+      `}
       {...props}
     />
   );

@@ -1,9 +1,10 @@
 import React, { useState, useRef } from "react";
 import { Button } from "./ui/button.jsx";
-import { Label } from "./ui/label.jsx";
-import { Upload, Image as ImageIcon, X, Camera, Loader2 } from "lucide-react";
+import { Upload, Camera, Loader2 } from "lucide-react";
+import SectionHeader from "./ui/SectionHeader.jsx";
 import { api } from "../api.js";
 import { useToast } from "../hooks/use-toast";
+import ImageUploader from "./prediction/ImageUploader.jsx";
 
 const ImagePrediction = ({ onResult, onLoading }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -104,69 +105,23 @@ const ImagePrediction = ({ onResult, onLoading }) => {
 
   return (
     <div className="w-full max-w-md mx-auto space-y-6 animate-in fade-in duration-500">
-      
-      <div className="flex flex-col items-center justify-center space-y-1 text-center mb-6">
-        <div className="bg-green-100/50 p-2.5 rounded-full mb-1">
-          <Camera className="h-5 w-5 text-green-600" />
-        </div>
-        <h3 className="font-display font-semibold text-gray-800 tracking-tight text-lg">Upload Leaf Image</h3>
-        <p className="font-sans text-xs text-gray-500">Provide a clear photo for AI analysis</p>
-      </div>
+      {/* header */}
+      <SectionHeader
+       icon={Camera}
+       title="Upload Leaf Image"
+       subtitle="Provide a clear image image for AI analysis"
+      />
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <Label htmlFor="imageUpload"
-          className="font-sans font-medium text-slate-700">Plant Leaf Photo</Label>
 
-          <div className="relative mt-1 group flex flex-col items-center justify-center w-full h-56 border-2 border-dashed border-gray-200 bg-gray-50/50 rounded-xl hover:border-green-400 hover:bg-green-50/30 transition-all duration-300 ease-in-out overflow-hidden">
-            
-            {imagePreview ? (
-              <div className="flex flex-col items-center justify-center w-full h-full p-4">
-                <div className="relative rounded-lg shadow-sm border border-gray-100 overflow-hidden bg-white">
-                  <img
-                    src={imagePreview}
-                    alt="Selected plant leaf"
-                    className="h-32 object-contain"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleRemoveImage}
-                    className="absolute top-1 right-1 bg-white/90 text-red-500 hover:bg-red-50 p-1.5 rounded-full shadow-sm hover:scale-105 transition-all duration-200"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-                <div className="mt-3 text-center">
-                  <p className="font-sans text-sm font-medium text-gray-700 truncate max-w-[200px]">
-                    {selectedImage.name}
-                  </p>
-                  <p className="font-mono text-xs text-gray-500 mt-0.5">
-                    {(selectedImage.size / 1024).toFixed(1)} KB
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <div className="bg-white p-3 rounded-full shadow-sm border border-gray-100 mb-3 group-hover:scale-110 group-hover:bg-green-50 transition-all duration-300">
-                  <ImageIcon className="h-6 w-6 text-gray-400 group-hover:text-green-500" />
-                </div>
-                <p className="font-sans mb-1 text-sm text-gray-600 font-medium">
-                  <span className="font-sans text-green-600 font-semibold group-hover:underline cursor-pointer">Click to upload</span> or drag and drop
-                </p>
-                <p className="font-mono text-xs text-gray-500">PNG, JPG, JPEG up to 10MB</p>
-              </div>
-            )}
-            
-            <input
-              ref={fileInputRef}
-              id="imageUpload"
-              type="file"
-              accept="image/*"
-              onChange={handleImageSelect}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            />
-          </div>
-        </div>
+      {/* ImageUploader */}
+      <ImageUploader
+       selectedImage={selectedImage}
+       imagePreview={imagePreview}
+       onImageSelect={handleImageSelect}
+       onRemoveImage={handleRemoveImage}
+       fileInputRef={fileInputRef} 
+      />
 
         <Button
           type="submit"
