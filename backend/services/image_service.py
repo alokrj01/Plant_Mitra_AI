@@ -1,0 +1,67 @@
+import torch
+from PIL import Image
+
+from fastapi import UploadFile, HTTPException
+from sqlalchemy.orm import Session
+
+from loader import get_models
+
+from models import Disease
+from config.mappings import idx_to_class
+
+
+def predict_image(file: UploadFile, db: Session) -> dict:
+    models = get_models()
+
+    device = models.device
+    image_model = models.image_model
+    image_transform = models.image_transform
+
+    try:
+        image = Image.open(file.file).convert("RGB")
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid image file: {str(e)}"
+        )
+
+    img_tensor = image_transform(image).unsqueeze(0).to(device)
+
+    with torch.inference_mode():
+        output = image_model(img_tensor)
+
+        probabilities = torch.softmax(output, dim=1)
+
+        pred_idx = int(
+            torch.argmax(output, dim=1).item()
+        )
+
+
+        confidence = probabilities[0][pred_idx].item()
+
+    pred_label = idx_to_class[pred_idx]
+
+    db_info = (
+        db.query(Disease)
+        .filter(Disease.class_name == pred_label)
+        .first()
+    )
+
+    response = {
+        "predicted_class": pred_label,
+        "confidence": f"{confidence:.2%}",
+    }
+
+    if db_info:
+        response.update({
+            "disease_name": db_info.disease_name,
+            "severity": db_info.severity,
+            "description": db_info.description,
+            "treatment": db_info.treatment,
+        })
+    else:
+        response["info"] = (
+            "Database details not found for this class."
+        )
+
+    return response
