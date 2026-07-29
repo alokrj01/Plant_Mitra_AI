@@ -94,11 +94,13 @@ def load_models() -> ModelBundle:
     )
 
     tokenizer = AutoTokenizer.from_pretrained(
-        text_model_path
+        text_model_path,
+        local_files_only=True,
     )
 
     text_model = AutoModelForSequenceClassification.from_pretrained(
-        text_model_path
+        text_model_path,
+        local_files_only=True,
     )
 
     text_model.eval()
