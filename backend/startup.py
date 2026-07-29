@@ -1,7 +1,8 @@
 from pathlib import Path
 from huggingface_hub import snapshot_download
 
-MODEL_DIR = Path("Models")
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_DIR = BASE_DIR / "Models"
 
 REPO_ID = "alokrj/plant-disease-classifier"
 
