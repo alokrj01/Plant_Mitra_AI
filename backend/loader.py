@@ -9,7 +9,7 @@ from transformers import (
     AutoModelForSequenceClassification,
 )
 
-from Models.model1 import ImageClassifierCNN
+from model1 import ImageClassifierCNN
 
 
 @dataclass

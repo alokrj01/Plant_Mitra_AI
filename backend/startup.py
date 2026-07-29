@@ -22,7 +22,7 @@ def download_models():
     snapshot_download(
         repo_id=REPO_ID,
         local_dir=".",
-        allow_patterns="Models/**",
+        allow_patterns="Models/*",
     )
 
     print("✅ Models downloaded successfully.")
