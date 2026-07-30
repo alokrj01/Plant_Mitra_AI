@@ -68,7 +68,7 @@ const ImagePrediction = ({ onResult, onLoading }) => {
       formData.append("file", selectedImage);
 
       const { data } = await api.post("/image-prediction", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": undefined },
       });
 
       console.log("Backend Full Data:", data); //debugging
