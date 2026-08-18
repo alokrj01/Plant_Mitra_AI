@@ -6,7 +6,9 @@
 
 # Backend dependencies and cache
 /backend/myenv/
+/backend/.venv/
 /backend/__pycache__/
+/backend/uv-installed.txt
 
 #large files
 /backend/Models/

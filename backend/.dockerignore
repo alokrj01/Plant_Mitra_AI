@@ -1,7 +1,11 @@
-myenv/
-venv/
-__pycache__/
-.git/
+.venv
+myenv
+__pycache__
+*.pyc
+.git
+.gitignore
+uv-installed.txt
 .env
+.env.*
 *.pyc
 *.whl

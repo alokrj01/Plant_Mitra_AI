@@ -9,23 +9,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from services.text_service import predict_text
 from services.image_service import predict_image
 
-#Database Imports
 from sqlalchemy.orm import Session
 from database import engine, Base, get_db
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-
     print("🚀 Starting Plant Mitra AI...")
-
     download_models()
-
     initialize_models()
-
     print("✅ Models initialized successfully.")
-
     yield
-
     print("🛑 Shutting down Plant Mitra AI...")
 
 # Create Database Tables

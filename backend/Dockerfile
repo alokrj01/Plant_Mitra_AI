@@ -1,35 +1,44 @@
 FROM python:3.12-slim
-ENV PYTHONUNBUFFERED=1
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:0.12.0 /uv /uvx /bin/
+
+ENV PYTHONUNBUFFERED=1 \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy
+
 WORKDIR /app
 
-COPY requirements.txt .
-
+# System dependencies required by the application
 RUN apt-get update && apt-get install -y \
     build-essential \
     libgl1 \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install CPU version of PyTorch explicitly
-RUN pip install --no-cache-dir \
-    torch==2.8.0 \
-    torchvision==0.23.0 \
-    --index-url https://download.pytorch.org/whl/cpu
+# Copy dependency metadata first for better Docker layer caching
+COPY pyproject.toml uv.lock ./
 
-# Install remaining dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install exactly what is in uv.lock
+# Do not install the project itself yet.
+RUN uv sync --locked --no-install-project
 
+# Copy application source and model files
 COPY . .
+
+# Sync again after copying the project
+RUN uv sync --locked
 
 # Create a non-root user
 RUN useradd -m appuser
 
-# Give ownership of application files
+# Give ownership of application files and virtual environment
 RUN chown -R appuser:appuser /app
 
-# Switch to non-root user
-USER appuser
+# Use uv-managed environment by default
+ENV PATH="/app/.venv/bin:$PATH"
 
+USER appuser
 
 EXPOSE 7860
 
