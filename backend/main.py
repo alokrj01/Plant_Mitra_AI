@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from startup import download_models
+# from startup import download_models
 from loader import initialize_models
 
 from fastapi import (FastAPI, UploadFile, File, Depends)
@@ -15,7 +15,7 @@ from database import engine, Base, get_db
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("🚀 Starting Plant Mitra AI...")
-    download_models()
+    # download_models()
     initialize_models()
     print("✅ Models initialized successfully.")
     yield

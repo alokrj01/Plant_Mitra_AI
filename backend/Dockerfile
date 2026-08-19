@@ -19,12 +19,14 @@ RUN apt-get update && apt-get install -y \
 # Copy dependency metadata first for better Docker layer caching
 COPY pyproject.toml uv.lock ./
 
-# Install exactly what is in uv.lock
-# Do not install the project itself yet.
+# Install dependencies
 RUN uv sync --locked --no-install-project
 
-# Copy application source and model files
+# Copy application source
 COPY . .
+
+# Download models during Docker image build
+RUN uv run python startup.py
 
 # Sync again after copying the project
 RUN uv sync --locked
