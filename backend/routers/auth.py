@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from dependencies.auth import get_current_user
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -19,7 +20,16 @@ router = APIRouter(
     tags=["Authentication"],
 )
 
+@router.get(
+    "/me",
+    response_model=UserResponse,
+)
+def get_me(
+    current_user: User = Depends(get_current_user),
+):
+    return current_user
 
+    
 @router.post(
     "/register",
     response_model=UserResponse,
