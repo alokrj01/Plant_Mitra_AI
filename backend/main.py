@@ -1,5 +1,4 @@
 from contextlib import asynccontextmanager
-# from startup import download_models
 from loader import initialize_models
 
 from fastapi import (FastAPI, UploadFile, File, Depends)
@@ -8,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from services.text_service import predict_text
 from services.image_service import predict_image
+from routers.auth import router as auth_router
 
 from sqlalchemy.orm import Session
 from database import engine, Base, get_db
@@ -15,7 +15,6 @@ from database import engine, Base, get_db
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("🚀 Starting Plant Mitra AI...")
-    # download_models()
     initialize_models()
     print("✅ Models initialized successfully.")
     yield
@@ -30,6 +29,8 @@ app = FastAPI(
     version="1.0.0",
      lifespan=lifespan,
   )
+
+app.include_router(auth_router)
 
 #Middleware for CORS(cross origin resource sharing)
 app.add_middleware(
