@@ -683,7 +683,8 @@ The project is intended to demonstrate not only model development, but also the 
 
 # 👨‍💻 Author
 <div align="center">
-<strong> Alok Ranjan </strong>
+
+### Alok Ranjan 
 
 Software Developer | Backend & AI Engineering
 
