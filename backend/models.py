@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, JSON
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, JSON, ForeignKey, Float
+from sqlalchemy.orm import relationship
 from database import Base
 
 class User(Base):
@@ -45,6 +46,11 @@ class User(Base):
     nullable=False,
   )
 
+  predictions = relationship(
+        "Prediction",
+        back_populates="user",
+  )
+
 class Disease(Base):
     __tablename__ = "diseases"
 
@@ -53,6 +59,69 @@ class Disease(Base):
     disease_name = Column(String) # e.g., "Potato - Early Blight"
     severity = Column(String)     # e.g., "Moderate"
     description = Column(String)
-    
     #Treatment is an object that's why store in JSON format
     treatment = Column(JSON)
+
+    predictions = relationship(
+        "Prediction",
+        back_populates="disease",
+    )
+
+class Prediction(Base):
+    __tablename__ = "predictions"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
+
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+
+    disease_id = Column(
+        Integer,
+        ForeignKey("diseases.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+
+    prediction_type = Column(
+        String(20),
+        nullable=False,
+    )
+
+    predicted_class = Column(
+        String(255),
+        nullable=False,
+    )
+
+    confidence = Column(
+        Float,
+        nullable=False,
+    )
+
+    input_text = Column(
+        String,
+        nullable=True,
+    )
+
+    created_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    user = relationship(
+        "User",
+        back_populates="predictions",
+    )
+
+    disease = relationship(
+        "Disease",
+        back_populates="predictions",
+    )

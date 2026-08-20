@@ -6,11 +6,15 @@ from sqlalchemy.orm import Session
 
 from loader import get_models
 
-from models import Disease
+from models import Disease, Prediction, User
 from config.mappings import idx_to_class
 
 
-def predict_image(file: UploadFile, db: Session) -> dict:
+def predict_image(
+  file: UploadFile, 
+  db: Session,
+  current_user: User | None = None,
+) -> dict:
     models = get_models()
 
     device = models.device
@@ -63,5 +67,22 @@ def predict_image(file: UploadFile, db: Session) -> dict:
         response["info"] = (
             "Database details not found for this class."
         )
+
+    if current_user:
+      prediction = Prediction(
+          user_id=current_user.id,
+          disease_id=db_info.id if db_info else None,
+          prediction_type="image",
+          predicted_class=pred_label,
+          confidence=confidence,
+      )
+
+      try:
+        db.add(prediction)
+        db.commit()
+        deb.refresh(prediction)
+      except Exception:
+        db.rollback()
+        raise
 
     return response

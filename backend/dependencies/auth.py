@@ -71,3 +71,73 @@ def get_current_user(
         )
 
     return user
+
+
+def get_current_user_optional(
+    token: str | None = Depends(
+        OAuth2PasswordBearer(
+            tokenUrl="/api/v1/auth/login",
+            auto_error=False,
+        )
+    ),
+    db: Session = Depends(get_db),
+) -> User | None:
+
+    if token is None:
+        return None
+
+    try:
+        payload = decode_token(token)
+
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if payload.get("type") != "access":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid access token.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    subject = payload.get("sub")
+
+    if subject is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid access token.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    try:
+        user_id = int(subject)
+    except (TypeError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid access token.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    user = (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
+
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User no longer exists.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive.",
+        )
+
+    return user
