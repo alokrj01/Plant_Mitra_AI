@@ -10,7 +10,7 @@ from services.image_service import predict_image
 from routers.auth import router as auth_router
 
 from sqlalchemy.orm import Session
-from database import engine, Base, get_db
+from database import get_db
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -21,7 +21,7 @@ async def lifespan(app: FastAPI):
     print("🛑 Shutting down Plant Mitra AI...")
 
 # Create Database Tables
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
 
 #Initialize FastAPI app
 app = FastAPI(

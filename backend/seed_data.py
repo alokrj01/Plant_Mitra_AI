@@ -1,6 +1,6 @@
 #to update the database again: run command python seed_data.py
 
-from database import SessionLocal, engine, Base
+from database import SessionLocal
 from models import Disease
 import json
 
@@ -259,13 +259,12 @@ disease_data = {
 
 def seed_db():
     """
-    Handles the database connection lifecycle, schema creation, 
-    and initial data seeding.
+    Seeds initial disease data
     """
-    # 1. Create tables if they don't exist
-    Base.metadata.create_all(bind=engine)
+    # Create tables if they don't exist
+    #Base.metadata.create_all(bind=engine)
 
-    # 2. Open a session
+    # Open a session
     db = SessionLocal()
 
     try:
