@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from services.text_service import predict_text
 from services.image_service import predict_image
 from routers.auth import router as auth_router
+from routers.admin import router as admin_router
 from routers.predictions import router as predictions_router
 
 from dependencies.auth import get_current_user_optional
@@ -35,6 +36,7 @@ app = FastAPI(
   )
 
 app.include_router(auth_router)
+app.include_router(admin_router)
 app.include_router(predictions_router)
 
 #Middleware for CORS(cross origin resource sharing)
