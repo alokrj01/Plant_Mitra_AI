@@ -4,8 +4,9 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from dependencies.auth import require_admin
-from models import User
+from models import Disease, User
 from schemas.admin import AdminUserResponse, UserStatusUpdate, UserRoleUpdate
+from schemas.disease import DiseaseCreate, DiseaseResponse, DiseaseUpdate
 
 
 router = APIRouter(
@@ -170,3 +171,161 @@ def update_user_role(
     db.refresh(user)
 
     return user
+
+
+@router.get(
+    "/diseases",
+    response_model=list[DiseaseResponse],
+)
+def get_diseases(
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(require_admin),
+):
+    return (
+        db.query(Disease)
+        .order_by(Disease.id.asc())
+        .all()
+    )
+
+
+@router.get(
+    "/diseases/{disease_id}",
+    response_model=DiseaseResponse,
+)
+def get_disease(
+    disease_id: int,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(require_admin),
+):
+    disease = (
+        db.query(Disease)
+        .filter(Disease.id == disease_id)
+        .first()
+    )
+
+    if disease is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Disease not found.",
+        )
+
+    return disease
+
+
+@router.post(
+    "/diseases",
+    response_model=DiseaseResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_disease(
+    data: DiseaseCreate,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(require_admin),
+):
+    existing_disease = (
+        db.query(Disease)
+        .filter(Disease.class_name == data.class_name)
+        .first()
+    )
+
+    if existing_disease:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A disease with this class_name already exists.",
+        )
+
+    disease = Disease(
+        class_name=data.class_name,
+        disease_name=data.disease_name,
+        severity=data.severity,
+        description=data.description,
+        treatment=data.treatment,
+    )
+
+    db.add(disease)
+    db.commit()
+    db.refresh(disease)
+
+    return disease
+
+
+@router.patch(
+    "/diseases/{disease_id}",
+    response_model=DiseaseResponse,
+)
+def update_disease(
+    disease_id: int,
+    data: DiseaseUpdate,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(require_admin),
+):
+    disease = (
+        db.query(Disease)
+        .filter(Disease.id == disease_id)
+        .first()
+    )
+
+    if disease is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Disease not found.",
+        )
+
+    # Check class_name uniqueness if it is being changed.
+    if (
+        data.class_name is not None
+        and data.class_name != disease.class_name
+    ):
+        existing_disease = (
+            db.query(Disease)
+            .filter(
+                Disease.class_name == data.class_name,
+                Disease.id != disease.id,
+            )
+            .first()
+        )
+
+        if existing_disease:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="A disease with this class_name already exists.",
+            )
+
+    update_data = data.model_dump(
+        exclude_unset=True,
+    )
+
+    for field, value in update_data.items():
+        setattr(disease, field, value)
+
+    db.commit()
+    db.refresh(disease)
+
+    return disease
+
+
+@router.delete(
+  "/diseases/{disease_id}",
+  status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_disease(
+    disease_id: int,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(require_admin),
+):
+    disease = (
+        db.query(Disease)
+        .filter(Disease.id == disease_id)
+        .first()
+    )
+
+    if disease is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Disease not found.",
+        )
+
+    db.delete(disease)
+    db.commit()
+
+    return None
