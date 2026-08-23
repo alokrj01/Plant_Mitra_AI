@@ -9,12 +9,35 @@ from loader import get_models
 from models import Disease, Prediction, User
 from config.mappings import idx_to_class
 
+ALLOWED_IMAGE_TYPES = {
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+}
+
+MAX_IMAGE_SIZE = 10 * 1024 * 1024
 
 def predict_image(
   file: UploadFile, 
   db: Session,
   current_user: User | None = None,
 ) -> dict:
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(
+            status_code=400,
+            detail="Unsupported image type. Please upload a JPEG, PNG, or WebP image.",
+        )
+
+    file.file.seek(0, 2)
+    file_size = file.file.tell()
+    file.file.seek(0)
+
+    if file_size > MAX_IMAGE_SIZE:
+        raise HTTPException(
+            status_code=413,
+            detail="Image file is too large. Maximum size is 10 MB.",
+        )
+
     models = get_models()
 
     device = models.device
@@ -23,10 +46,10 @@ def predict_image(
 
     try:
         image = Image.open(file.file).convert("RGB")
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid image file: {str(e)}"
+            detail="Invalid or corrupted image file.",
         )
 
     img_tensor = image_transform(image).unsqueeze(0).to(device)
@@ -80,7 +103,7 @@ def predict_image(
       try:
         db.add(prediction)
         db.commit()
-        deb.refresh(prediction)
+        db.refresh(prediction)
       except Exception:
         db.rollback()
         raise

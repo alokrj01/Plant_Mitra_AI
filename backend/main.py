@@ -1,5 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 from fastapi.middleware.cors import CORSMiddleware
 
 from services.text_service import predict_text
@@ -49,7 +49,20 @@ app.add_middleware(
 )
 
 class TextInput(BaseModel):
-  text:str
+  text:str = Field(
+    min_length=1,
+    max_length=1000,
+  )
+
+  @field_validator("text")
+  @classmethod
+  def validate_text(cls, value: str) -> str:
+    value = value.strip()
+
+    if not value:
+      raise ValueError("text cannot be empty or whitespace.")
+
+    return value
 
 #API Route
 @app.get("/")
