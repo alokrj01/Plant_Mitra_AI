@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta, timezone
-
+from uuid import uuid4
+import hashlib
 import jwt
 from pwdlib import PasswordHash
 
 from config.settings import get_settings
+
 
 password_hash = PasswordHash.recommended()
 
@@ -49,9 +51,13 @@ def create_access_token(subject: str) -> str:
     algorithm=settings.JWT_ALGORITHM,
   )
 
-def create_refresh_token(subject: str) -> str:
+def create_refresh_token(subject: str) -> tuple[str, str, datetime]:
     """
     Create a longer-lived JWT refresh token.
+
+    - encoded token
+    - token JTI
+    - expiration timestamp
     """
     settings = get_settings()
 
@@ -59,17 +65,31 @@ def create_refresh_token(subject: str) -> str:
       days=settings.REFRESH_TOKEN_EXPIRE_DAYS
     )
 
+    jti = str(uuid4())
+
     payload = {
       "sub": subject,
       "type": "refresh",
+      "jti": jti,
       "exp": expires_at,
     }
 
-    return jwt.encode(
+    token = jwt.encode(
       payload,
       settings.JWT_SECRET_KEY,
       algorithm=settings.JWT_ALGORITHM,
     )
+
+    return token, jti, expires_at
+
+
+def hash_token_identifier(jti: str) -> str:
+    """
+    Hash a refresh-token JTI before storing it in the database.
+    """
+    return hashlib.sha256(
+        jti.encode("utf-8")
+    ).hexdigest()
 
 def decode_token(token: str) -> dict:
     """

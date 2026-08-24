@@ -1,5 +1,6 @@
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
-from dependencies.auth import get_current_user
+from dependencies.auth import get_current_user, get_refresh_token_record
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -7,12 +8,13 @@ from config.security import (
   create_access_token,
   create_refresh_token,
   hash_password,
+  hash_token_identifier,
   verify_password,
 )
 
 from database import get_db
-from models import User
-from schemas.auth import RegisterRequest, TokenResponse, UserResponse
+from models import RefreshToken, User
+from schemas.auth import RegisterRequest, TokenResponse, UserResponse, RefreshTokenRequest
 
 
 router = APIRouter(
@@ -105,11 +107,90 @@ def login(
         str(user.id)
     )
 
-    refresh_token = create_refresh_token(
+    refresh_token, jti, expires_at = create_refresh_token(
         str(user.id)
     )
+
+    refresh_token_record = RefreshToken(
+        user_id=user.id,
+        token_hash=hash_token_identifier(jti),
+        expires_at=expires_at,
+    )
+
+    try:
+       db.add(refresh_token_record)
+       db.commit()
+    except Exception:
+       db.rollback()
+       raise
 
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
     )
+
+
+@router.post(
+    "/refresh",
+    response_model=TokenResponse,
+)
+def refresh_token(
+    data: RefreshTokenRequest,
+    db: Session = Depends(get_db),
+):
+    _, old_refresh_record, user = get_refresh_token_record(
+        data.refresh_token,
+        db,
+    )
+
+    now = datetime.now(timezone.utc)
+
+    new_access_token = create_access_token(
+        str(user.id)
+    )
+
+    new_refresh_token, new_jti, new_expires_at = (
+        create_refresh_token(str(user.id))
+    )
+
+    old_refresh_record.revoked_at = now
+
+    new_refresh_record = RefreshToken(
+        user_id=user.id,
+        token_hash=hash_token_identifier(new_jti),
+        expires_at=new_expires_at,
+    )
+
+    try:
+        db.add(new_refresh_record)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+
+    return TokenResponse(
+        access_token=new_access_token,
+        refresh_token=new_refresh_token,
+    )
+
+
+@router.post(
+    "/logout",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def logout(
+    data: RefreshTokenRequest,
+    db: Session = Depends(get_db),
+):
+    _, refresh_record, _ = get_refresh_token_record(
+        data.refresh_token,
+        db,
+    )
+
+    refresh_record.revoked_at = datetime.now(timezone.utc)
+
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
