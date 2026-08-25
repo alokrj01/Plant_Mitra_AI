@@ -2,13 +2,15 @@
 /frontend/node_modules
 /frontend/dist
 /frontend/.vite/
-/frontend/.env/
+frontend/.env.production
+frontend/.env.development
 
 # Backend dependencies and cache
 /backend/myenv/
 /backend/.venv/
 /backend/__pycache__/
 /backend/uv-installed.txt
+backend/.env
 
 #large files
 /backend/Models/

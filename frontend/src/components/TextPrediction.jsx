@@ -4,7 +4,8 @@ import { Label } from './ui/label.jsx';
 import { Textarea } from './ui/textarea.jsx';
 import { FileText, Send, ChevronDown, Loader2 } from 'lucide-react';
 import SectionHeader from './ui/SectionHeader.jsx';
-import { api } from '../api.js';
+import { predictFromText } from "../features/predictions/api/predictionApi.js";
+import { getApiErrorMessage } from '../lib/apiError.js';
 import { useToast } from '../hooks/use-toast';
 
 const TextPrediction = ({ onResult, onLoading }) => {
@@ -21,7 +22,7 @@ const TextPrediction = ({ onResult, onLoading }) => {
     e.preventDefault();
     console.log("handleSubmit triggered:", { plantType, symptoms }); //for debugging
 
-    if (!plantType || !symptoms) {
+    if (!plantType || !symptoms.trim()) {
       toast({
         title: "Missing Information",
         description: "Please select a plant type and describe symptoms.",
@@ -33,21 +34,10 @@ const TextPrediction = ({ onResult, onLoading }) => {
     try {
       setIsSubmitting(true);
       onLoading(true);
-      
-      // STEP 1: Combine plantType and symptoms into a single string.
-      const combinedText = `The plant is ${plantType}. The symptoms are: ${symptoms}`;
+    
+      const combinedText = `The plant is ${plantType}. The symptoms are: ${symptoms.trim()}`;
 
-      // STEP 2: Create a payload object with the 'text' key that the backend expects.
-      const payload = {
-        text: combinedText,
-      };
-
-      console.log("Sending this payload to backend:", payload); // For debugging
-
-      // STEP 3: Send the correct payload to the API.
-      const { data } = await api.post('/text-prediction', payload);
-      
-      console.log("API Response:", data); //for debugging
+      const data = await predictFromText(combinedText);
 
       onResult({
         ...data,
@@ -60,16 +50,17 @@ const TextPrediction = ({ onResult, onLoading }) => {
       toast({
         title: "Analysis Complete",
         description: "Text-based prediction has been generated.",
+        variant: "success"
       });
 
       setSymptoms('');
       setPlantType('');
 
     } catch (error) {
-      console.error("Prediction Failed:", error); //for debugging
+      console.error("TEXT PREDICTION ERROR:", error);
       toast({
         title: "Prediction Failed",
-        description: error.response?.data?.message || error.message,
+        description: getApiErrorMessage(error),
         variant: "destructive",
       });
     } finally {
@@ -125,15 +116,23 @@ const TextPrediction = ({ onResult, onLoading }) => {
             className='font-sans placeholder:text-slate-400'
             value={symptoms}
             onChange={(e) => setSymptoms(e.target.value)}
-            rows={4} 
+            rows={4}
+            maxLength={1000} 
           />
+
+          <div className="flex justify-end mt-1">
+             <span className="text-xs text-slate-400 dark:text-slate-500">
+               {symptoms.length}/1000
+             </span>
+          </div>
         </div>
         
         {/* Button */}
         <Button
           type="submit"
+          aria-busy={isSubmitting}
           className="w-full h-12 mt-2 text-sm"
-          disabled={!plantType || !symptoms || isSubmitting}
+          disabled={!plantType || !symptoms.trim() || isSubmitting}
         >
           {isSubmitting ? (
             <>

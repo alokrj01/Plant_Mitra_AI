@@ -162,22 +162,30 @@ export const ToastTitle = ({ children }) => (
 // =======================
 // Toast Description
 // =======================
-export const ToastDescription = ({ children }) => (
-  <p
-    className="
-      mt-1
+export const ToastDescription = ({ 
+  children,
+  variant = "default",
+}) => {
+  const descriptionColors = {
+    default: "text-slate-600 dark:text-slate-400",
+    success: "text-emerald-700 dark:text-emerald-300",
+    destructive: "text-red-700 dark:text-red-300",
+    warning: "text-amber-700 dark:text-amber-300",
+  };
 
-      text-sm
-
-      text-slate-600
-      dark:text-slate-400
-
-      leading-relaxed
-    "
-  >
-    {children}
-  </p>
-);
+  return (
+    <p
+      className={`
+        mt-1
+        text-sm
+        leading-relaxed
+        ${descriptionColors[variant] || descriptionColors.default}
+        `}
+    >
+      {children}
+    </p>
+  );
+};
 
 // =======================
 // Close Button

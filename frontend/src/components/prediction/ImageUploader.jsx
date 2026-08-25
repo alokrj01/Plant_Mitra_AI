@@ -1,4 +1,3 @@
-import React from "react";
 import { Label } from "../ui/label";
 import { Image as ImageIcon, X } from "lucide-react";
 
@@ -9,6 +8,13 @@ const ImageUploader = ({
   onRemoveImage,
   fileInputRef,
 }) => {
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      fileInputRef.current?.click();
+    }
+  };
+
   return (
     <div>
       <Label
@@ -19,6 +25,10 @@ const ImageUploader = ({
       </Label>
 
       <div
+        tabIndex={0}
+        role="button"
+        aria-label="Upload plant leaf image"
+        onKeyDown={handleKeyDown}
         className="
           relative
           mt-1
@@ -50,6 +60,14 @@ const ImageUploader = ({
           transition-all
           duration-300
           overflow-hidden
+
+          cursor-pointer
+
+          focus:outline-none
+          focus:ring-2
+          focus:ring-green-500
+          focus:ring-offset-2
+          dark:focus:ring-offset-slate-900
         "
       >
         {imagePreview ? (
@@ -64,6 +82,7 @@ const ImageUploader = ({
               <button
                 type="button"
                 onClick={onRemoveImage}
+                aria-label="Remove selected image"
                 className="
                   absolute
                   top-1
@@ -84,6 +103,11 @@ const ImageUploader = ({
 
                   transition-all
                   duration-200
+
+                  focus:outline-none
+                  focus:ring-2
+                  focus:ring-red-500
+                  focus:ring-offset-2
                 "
               >
                 <X className="h-4 w-4" />
@@ -135,7 +159,7 @@ const ImageUploader = ({
             </p>
 
             <p className="font-mono text-xs text-slate-500 dark:text-slate-400">
-              PNG, JPG, JPEG up to 10MB
+              PNG, JPG, JPEG, WebP up to 10MB
             </p>
           </div>
         )}
@@ -144,9 +168,10 @@ const ImageUploader = ({
           ref={fileInputRef}
           id="imageUpload"
           type="file"
-          accept="image/*"
+          accept="image/jpeg, image/png, image/webp"
           onChange={onImageSelect}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          tabIndex={-1}
           aria-label="Upload plant leaf image"
         />
       </div>

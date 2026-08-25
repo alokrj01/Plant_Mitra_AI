@@ -1,4 +1,3 @@
-import { useToast } from "../../hooks/use-toast";
 import {
   CheckCircle2,
   AlertCircle,
@@ -15,13 +14,21 @@ import {
   ToastViewport,
 } from "./toast.jsx";
 
+import { useToast } from "../../hooks/use-toast";
+
 export function Toaster() {
-  const { toasts } = useToast();
+  const { toasts, dismiss } = useToast();
 
   return (
     <ToastProvider>
       {toasts.map(
-        ({ id, title, description, action, variant, ...props }) => {
+        ({
+          id,
+          title,
+          description,
+          action,
+          variant,
+        }) => {
           let Icon = Info;
           let iconColor =
             "text-slate-500 dark:text-slate-400";
@@ -47,30 +54,27 @@ export function Toaster() {
 
             default:
               Icon = Info;
-              iconColor =
-                "text-slate-500 dark:text-slate-400";
           }
 
           return (
             <Toast
               key={id}
               variant={variant}
-              {...props}
             >
               <div className="flex w-full items-start gap-3">
-                {/* Icon */}
                 <Icon
                   className={`mt-0.5 h-5 w-5 shrink-0 ${iconColor}`}
                 />
 
-                {/* Content */}
                 <div className="grid flex-1 gap-1">
                   {title && (
-                    <ToastTitle>{title}</ToastTitle>
+                    <ToastTitle>
+                      {title}
+                    </ToastTitle>
                   )}
 
                   {description && (
-                    <ToastDescription>
+                    <ToastDescription variant={variant}>
                       {description}
                     </ToastDescription>
                   )}
@@ -79,10 +83,12 @@ export function Toaster() {
 
               {action}
 
-              <ToastClose />
+              <ToastClose
+                onClick={() => dismiss(id)}
+              />
             </Toast>
           );
-        }
+        },
       )}
 
       <ToastViewport />

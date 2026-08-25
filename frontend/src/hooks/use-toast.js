@@ -1,16 +1,83 @@
-import { useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
+
+const TOAST_DURATION = 3000;
+
+let toastState = [];
+let listeners = new Set();
+
+const emit = () => {
+  listeners.forEach((listener) => {
+    listener(toastState);
+  });
+};
+
+const removeToast = (id) => {
+  toastState = toastState.filter(
+    (toast) => toast.id !== id,
+  );
+
+  emit();
+};
+
+const addToast = ({
+  title,
+  description,
+  variant = "default",
+  action,
+}) => {
+  const id = crypto.randomUUID();
+
+  toastState = [
+    ...toastState,
+    {
+      id,
+      title,
+      description,
+      variant,
+      action,
+    },
+  ];
+
+  emit();
+
+  window.setTimeout(() => {
+    removeToast(id);
+  }, TOAST_DURATION);
+
+  return {
+    id,
+    dismiss: () => removeToast(id),
+  };
+};
 
 export const useToast = () => {
-  const [toasts, setToasts] = useState([]);
+  const [toasts, setToasts] = useState(toastState);
 
-  const toast = useCallback(({ title, description, variant = "default", action }) => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, title, description, variant, action }]);
+  useEffect(() => {
+    const listener = (nextToasts) => {
+      setToasts(nextToasts);
+    };
 
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3000); // Toast disappears after 3 seconds
+    listeners.add(listener);
+
+    return () => {
+      listeners.delete(listener);
+    };
   }, []);
 
-  return { toasts, toast };
+  const toast = useCallback(
+    (options) => addToast(options),
+    [],
+  );
+
+  const dismiss = useCallback(
+    (id) => removeToast(id),
+    [],
+  );
+
+  return {
+    toasts,
+    toast,
+    dismiss,
+  };
 };

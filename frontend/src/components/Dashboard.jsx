@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Navbar from "./Navbar.jsx";
 import TextPrediction from "./TextPrediction.jsx";
 import ImagePrediction from "./ImagePrediction.jsx";
@@ -14,23 +14,35 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePredictionResult = (apiResult) => {
-    console.log("Dashboard received:", apiResult); //debugging
+    console.log("Dashboard received:", apiResult);
+
     const formattedResult = {
       ...apiResult,
-      // Backend sends 'disease_name', mapping it to 'disease' for compatibility
-      disease: apiResult.disease_name || apiResult.predicted_class || apiResult.Predicted_label || "Unknown",
-      description: apiResult.description || "No description available.",
-      treatment: apiResult.treatment || { immediate: [], prevention: [] },
+      disease: 
+        apiResult.disease_name || 
+        apiResult.predicted_class || 
+        apiResult.Predicted_label || 
+        "Unknown",
+      description: 
+        apiResult.description || "No description available.",
+      treatment: 
+        apiResult.treatment || { 
+          immediate: [], 
+          prevention: [] 
+        },
       severity: apiResult.severity || "Unknown",
-      confidence: apiResult.confidence, // format "98.50%" from backend
+      confidence: apiResult.confidence,
     };
     
-    console.log("✅ FORMATTED DATA:", formattedResult); //debugging
     setPredictionResults(formattedResult);
   };
 
   const handleLoadingState = (loading) => {
     setIsLoading(loading);
+
+    if (loading) {
+      setPredictionResults(null);
+    }
   };
 
   return (
@@ -95,7 +107,6 @@ const Dashboard = () => {
         </div>
 
         {/* --- RESULTS SECTION --- */}
-        {(predictionResults || isLoading) && (
           <div className="max-w-6xl mx-auto animate-in fade-in duration-700">
             
             {/* Elegant Divider Title */}
@@ -111,7 +122,6 @@ const Dashboard = () => {
             <Results results={predictionResults} isLoading={isLoading} />
             
           </div>
-        )}
       </main>
 
       {/* Footer handles its own dark background seamlessly */}
