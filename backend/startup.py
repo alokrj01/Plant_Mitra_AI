@@ -15,6 +15,7 @@ def download_models():
   required_files = [
   MODEL_DIR / "cnn_model.pth",
   MODEL_DIR / "encoder.pkl",
+  MODEL_DIR / "plant_gate_stage3_best.pth",
   MODEL_DIR / "best-model-text" / "config.json",
   MODEL_DIR / "best-model-text" / "model.safetensors",
   MODEL_DIR / "best-model-text" / "tokenizer.json",

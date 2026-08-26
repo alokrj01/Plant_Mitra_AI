@@ -18,7 +18,7 @@ ALLOWED_IMAGE_TYPES = {
 MAX_IMAGE_SIZE = 10 * 1024 * 1024
 
 def predict_image(
-  file: UploadFile, 
+  file: UploadFile,
   db: Session,
   current_user: User | None = None,
 ) -> dict:
@@ -43,6 +43,7 @@ def predict_image(
     device = models.device
     image_model = models.image_model
     image_transform = models.image_transform
+    plant_gate = models.plant_gate
 
     try:
         image = Image.open(file.file).convert("RGB")
@@ -51,6 +52,94 @@ def predict_image(
             status_code=400,
             detail="Invalid or corrupted image file.",
         )
+
+
+    # ========================================================
+    # Plant/Crop Gate
+    #
+    # IMPORTANT:
+    # Disease CNN has NOT been called yet.
+    # ========================================================
+
+    gate_result = plant_gate.predict(
+        image
+    )
+
+
+    gate_confidence = (
+        gate_result.confidence
+    )
+
+    # ========================================================
+    # NOT A PLANT
+    # ========================================================
+
+    if gate_result.route == "not_plant":
+
+        return {
+            "status": "rejected",
+            "gate": "not_plant",
+            "predicted_class": "non_plant",
+            "confidence": (
+                f"{gate_confidence:.2%}"
+            ),
+            "message": (
+                "The uploaded image does not "
+                "appear to contain a plant. "
+                "Please upload a clear image "
+                "of a plant or leaf."
+            ),
+        }
+
+    # ========================================================
+    # UNSUPPORTED CROP
+    # ========================================================
+
+    if (
+        gate_result.route
+        == "unsupported_crop"
+    ):
+
+        return {
+            "status": "rejected",
+            "gate": "unsupported_crop",
+            "predicted_class": "other_plant",
+            "confidence": (
+                f"{gate_confidence:.2%}"
+            ),
+            "message": (
+                "A plant was detected, but "
+                "this crop is currently not "
+                "supported for disease detection. "
+                "Currently supported crops are "
+                "pepper, potato, and tomato."
+            ),
+        }
+
+    # ========================================================
+    # UNCERTAIN
+    # ========================================================
+
+    if gate_result.route == "uncertain":
+
+        return {
+            "status": "uncertain",
+            "gate": "uncertain",
+            "predicted_class": (
+                gate_result.predicted_class
+            ),
+            "confidence": (
+                f"{gate_confidence:.2%}"
+            ),
+            "message": (
+                "The image could not be "
+                "classified confidently as a "
+                "supported plant. Please upload "
+                "a clear, well-focused image "
+                "showing the plant or leaf."
+            ),
+        }
+
 
     img_tensor = image_transform(image).unsqueeze(0).to(device)
 

@@ -11,6 +11,7 @@ frontend/.env.development
 /backend/__pycache__/
 /backend/uv-installed.txt
 backend/.env
+backend/test/
 
 #large files
 /backend/Models/
