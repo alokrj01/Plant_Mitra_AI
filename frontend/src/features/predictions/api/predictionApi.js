@@ -46,3 +46,17 @@ export async function getPrediction(predictionId) {
 
   return response.data;
 }
+
+export async function submitPredictionFeedback(
+  predictionId,
+  feedback,
+) {
+  const response = await api.post(
+    `/api/v1/predictions/${predictionId}/feedback`,
+    {
+      feedback,
+    },
+  );
+
+  return response.data;
+}

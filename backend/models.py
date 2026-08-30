@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import (Boolean, Column, DateTime, Integer, String, JSON, ForeignKey, Float,)
+from sqlalchemy import (Boolean, Column, DateTime, Integer, String, JSON, ForeignKey, Float, UniqueConstraint)
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -182,4 +182,61 @@ class Prediction(Base):
     disease = relationship(
         "Disease",
         back_populates="predictions",
+    )
+
+    feedback = relationship(
+        "PredictionFeedback",
+        back_populates="prediction",
+        cascade="all, delete-orphan",
+    )
+
+class PredictionFeedback(Base):
+    __tablename__ = "prediction_feedback"
+
+    __table_args__ = (
+        UniqueConstraint(
+            "prediction_id",
+            "user_id",
+            name="uq_prediction_feedback_prediction_user",
+        ),
+    )
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
+
+    prediction_id = Column(
+        Integer,
+        ForeignKey("predictions.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    feedback = Column(
+        String(20),
+        nullable=False,
+    )
+
+    created_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    prediction = relationship(
+        "Prediction",
+        back_populates="feedback",
+    )
+
+    user = relationship(
+        "User",
     )

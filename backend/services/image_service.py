@@ -197,4 +197,6 @@ def predict_image(
         db.rollback()
         raise
 
+      response["prediction_id"] = prediction.id
+
     return response

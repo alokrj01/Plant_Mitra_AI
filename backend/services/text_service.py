@@ -88,4 +88,6 @@ def predict_text(
         db.rollback()
         raise
 
+      response["prediction_id"] = prediction.id
+
     return response
