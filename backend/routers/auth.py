@@ -3,6 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from dependencies.auth import get_current_user, get_refresh_token_record
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from services.password_reset_service import (
+    create_password_reset_request,
+)
 
 from config.security import (
   create_access_token,
@@ -10,11 +13,20 @@ from config.security import (
   hash_password,
   hash_token_identifier,
   verify_password,
+  verify_google_token,
 )
 
 from database import get_db
-from models import RefreshToken, User
-from schemas.auth import RegisterRequest, TokenResponse, UserResponse, RefreshTokenRequest
+from models import PasswordResetToken, RefreshToken, User
+from schemas.auth import (
+  RegisterRequest,
+  TokenResponse,
+  UserResponse,
+  RefreshTokenRequest,
+  GoogleAuthRequest,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
+)
 
 
 router = APIRouter(
@@ -31,7 +43,7 @@ def get_me(
 ):
     return current_user
 
-    
+
 @router.post(
     "/register",
     response_model=UserResponse,
@@ -129,6 +141,103 @@ def login(
         refresh_token=refresh_token,
     )
 
+@router.post(
+    "/google",
+    response_model=TokenResponse,
+)
+def google_login(
+    data: GoogleAuthRequest,
+    db: Session = Depends(get_db),
+):
+    try:
+        google_data = verify_google_token(data.id_token)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Google authentication.",
+        )
+
+    google_id = google_data.get("sub")
+    email = google_data.get("email")
+    email_verified = google_data.get("email_verified", False)
+
+    if not google_id or not email:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Google account information.",
+        )
+
+    if not email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Google email is not verified.",
+        )
+
+    email = email.lower().strip()
+
+    user = (
+        db.query(User)
+        .filter(User.google_id == google_id)
+        .first()
+    )
+
+    if not user:
+        user = (
+            db.query(User)
+            .filter(User.email == email)
+            .first()
+        )
+
+    if not user:
+        user = User(
+            email=email,
+            password_hash=None,
+            google_id=google_id,
+            is_verified=True,
+        )
+
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    elif not user.google_id:
+        user.google_id = google_id
+        user.is_verified = True
+
+        db.commit()
+        db.refresh(user)
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive.",
+        )
+
+    access_token = create_access_token(
+        str(user.id)
+    )
+
+    refresh_token, jti, expires_at = create_refresh_token(
+        str(user.id)
+    )
+
+    refresh_token_record = RefreshToken(
+        user_id=user.id,
+        token_hash=hash_token_identifier(jti),
+        expires_at=expires_at,
+    )
+
+    try:
+        db.add(refresh_token_record)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+
+    return TokenResponse(
+        access_token=access_token,
+        refresh_token=refresh_token,
+    )
 
 @router.post(
     "/refresh",
@@ -194,3 +303,80 @@ def logout(
     except Exception:
         db.rollback()
         raise
+
+
+@router.post("/forgot-password")
+def forgot_password(
+    data: ForgotPasswordRequest,
+    db: Session = Depends(get_db),
+):
+    token = create_password_reset_request(
+        data.email,
+        db,
+    )
+
+    return {
+        "message": (
+            "If an account with that email exists, "
+            "a password reset link will be sent."
+        )
+    }
+
+@router.post("/reset-password")
+def reset_password(
+    data: ResetPasswordRequest,
+    db: Session = Depends(get_db),
+):
+    token_hash = hash_token_identifier(data.token)
+
+    reset_token = (
+        db.query(PasswordResetToken)
+        .filter(
+            PasswordResetToken.token_hash == token_hash
+        )
+        .first()
+    )
+
+    if not reset_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired password reset token.",
+        )
+
+    now = datetime.now(timezone.utc)
+
+    if reset_token.used_at is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired password reset token.",
+        )
+
+    if reset_token.expires_at <= now:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired password reset token.",
+        )
+
+    user = reset_token.user
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive.",
+        )
+
+    user.password_hash = hash_password(
+        data.new_password
+    )
+
+    reset_token.used_at = now
+
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+
+    return {
+        "message": "Password has been reset successfully."
+    }

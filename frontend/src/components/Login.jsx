@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button } from "./ui/button.jsx";
 import { Input } from "./ui/input.jsx";
 import { Label } from "./ui/label.jsx";
+import GoogleSignInButton from "./auth/GoogleSignInButton.jsx";
 import {
   Card,
   CardContent,
@@ -31,7 +32,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -74,13 +75,13 @@ const Login = () => {
 
   return (
     <AuthLayout>
-      <Card className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
-        <CardHeader className="text-center items-center">
-          <CardTitle className="font-display text-2xl">
+      <Card className="border-0 bg-transparent shadow-none animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+        <CardHeader className="text-center items-center pb-5 sm:pb-6">
+          <CardTitle className="font-display text-2xl sm:text-3xl font-bold tracking-tight">
             Welcome Back
           </CardTitle>
 
-          <CardDescription className="font-sans">
+          <CardDescription className="font-sans text-sm sm:text-base text-slate-500 dark:text-slate-400">
             Sign in to your account to continue
           </CardDescription>
         </CardHeader>
@@ -88,12 +89,12 @@ const Login = () => {
         <CardContent>
           <form
             onSubmit={handleLogin}
-            className="space-y-5"
+            className="space-y-4 sm:space-y-5"
           >
             <div>
               <Label
                 htmlFor="email"
-                className="font-sans font-medium text-slate-700 dark:text-slate-300"
+                className="font-sans text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 Email Address
               </Label>
@@ -122,13 +123,13 @@ const Login = () => {
               <div className="flex items-center justify-between mb-1.5">
                 <Label
                   htmlFor="password"
-                  className="font-sans font-medium text-slate-700 dark:text-slate-300 mb-0"
+                  className="font-sans text-sm font-medium text-slate-700 dark:text-slate-300 mb-0"
                 >
                   Password
                 </Label>
 
                 <Link
-                  to="#"
+                  to="/forgot-password"
                   className="font-sans text-sm font-medium text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 hover:underline"
                 >
                   Forgot password?
@@ -182,7 +183,7 @@ const Login = () => {
 
             <Button
               type="submit"
-              className="w-full mt-2 font-semibold"
+              className="w-full mt-2 h-11 font-semibold shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -196,6 +197,42 @@ const Login = () => {
             </Button>
           </form>
 
+          <div className="mt-6">
+           <div className="relative flex items-center">
+             <div className="flex-grow border-t border-slate-200 dark:border-slate-700" />
+
+             <span className="mx-4 text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
+             OR
+             </span>
+
+             <div className="flex-grow border-t border-slate-200 dark:border-slate-700" />
+           </div>
+
+           <GoogleSignInButton
+             onSuccess={async (credential) => {
+               try {
+                  setIsLoading(true);
+
+                  await googleLogin(credential);
+
+                  toast({
+                     title: "Login Successful",
+                     description: "Welcome to PlantMitra AI.",
+                  });
+
+                  navigate("/dashboard", { replace: true });
+               } catch (error) {
+                 toast({
+                   title: "Google Login Failed",
+                   description: getApiErrorMessage(error),
+                   variant: "destructive",
+                 });
+               } finally {
+                 setIsLoading(false);
+               }
+             }}
+           />
+          </div>
           <AuthFooter
             text="New to PlantMitra AI?"
             link="/register"

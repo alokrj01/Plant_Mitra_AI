@@ -3,9 +3,12 @@ from uuid import uuid4
 import hashlib
 import jwt
 from pwdlib import PasswordHash
+from secrets import token_urlsafe
+
+from google.oauth2 import id_token
+from google.auth.transport import requests
 
 from config.settings import get_settings
-
 
 password_hash = PasswordHash.recommended()
 
@@ -90,6 +93,29 @@ def hash_token_identifier(jti: str) -> str:
     return hashlib.sha256(
         jti.encode("utf-8")
     ).hexdigest()
+
+def verify_google_token(token: str) -> dict:
+  """
+  Verify a Google ID token and return its verified payload.
+  """
+  settings = get_settings()
+
+  try:
+    payload = id_token.verify_oauth2_token(
+      token,
+      requests.Request(),
+      settings.GOOGLE_CLIENT_ID,
+    )
+  except ValueError:
+    raise ValueError("Invalid Google ID token.")
+
+  return payload
+
+def create_password_reset_token() -> str:
+    """
+    Generate a cryptographically secure password reset token.
+    """
+    return token_urlsafe(32)
 
 def decode_token(token: str) -> dict:
     """

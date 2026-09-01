@@ -23,6 +23,8 @@ dependencies = [
   "pydantic-settings>=2.15.0",
   "psycopg[binary]>=3.3.4",
   "alembic>=1.19.1",
+  "google-auth>=2.57.0",
+  "resend>=2.42.0",
 ]
 
 [[tool.uv.index]]

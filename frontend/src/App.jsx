@@ -7,6 +7,8 @@ import {
 
 import Login from "./components/Login.jsx";
 import Register from "./components/Register.jsx";
+import ForgotPassword from "./components/ForgotPassword.jsx";
+import ResetPassword from "./components/ResetPassword.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 import ProtectedRoute from "./features/auth/ProtectedRoute.jsx";
 import { Toaster } from "./components/ui/Toaster.jsx";
@@ -19,11 +21,20 @@ function App() {
           {/* Public routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route
+            path="/forgot-password"
+            element={<ForgotPassword />}
+          />
+
+          <Route
+            path="/reset-password"
+            element={<ResetPassword />}
+          />
           <Route path="/" element={<Dashboard />} />
 
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
-            
+
             <Route
               path="/dashboard"
               element={<Dashboard />}

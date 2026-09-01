@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button.jsx";
 import { Input } from "./ui/input.jsx";
 import { Label } from "./ui/label.jsx";
+import GoogleSignInButton from "./auth/GoogleSignInButton.jsx";
 import {
   Card,
   CardContent,
@@ -37,7 +38,7 @@ const Register = () => {
 
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { register } = useAuth();
+  const { register, googleLogin } = useAuth();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -103,6 +104,29 @@ const Register = () => {
     return true;
   };
 
+  const handleGoogleSuccess = async (credential) => {
+    setIsLoading(true);
+
+    try {
+      await googleLogin(credential);
+
+      toast({
+        title: "Registration Successful",
+        description: "Welcome to PlantMitra AI.",
+      });
+
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      toast({
+        title: "Google Registration Failed",
+        description: getApiErrorMessage(error),
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleRegister = async (event) => {
     event.preventDefault();
 
@@ -144,7 +168,7 @@ const Register = () => {
         description: getApiErrorMessage(error),
         variant: "destructive",
       });
-      
+
     } finally {
       setIsLoading(false);
     }
@@ -152,13 +176,13 @@ const Register = () => {
 
   return (
     <AuthLayout>
-      <Card className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
-        <CardHeader className="text-center items-center">
-          <CardTitle className="font-display text-2xl">
+      <Card className="border 0 bg-transparent shadow-none animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+        <CardHeader className="text-center items-center pb-5 sm:pb-6">
+          <CardTitle className="font-display text-2xl sm:text-3xl font-bold tracking-tight">
             Create Account
           </CardTitle>
 
-          <CardDescription className="font-sans">
+          <CardDescription className="font-sans text-sm sm:text-base text-slate-500 dark:text-slate-400">
             Join PlantMitra AI to protect your plants
           </CardDescription>
         </CardHeader>
@@ -166,13 +190,13 @@ const Register = () => {
         <CardContent>
           <form
             onSubmit={handleRegister}
-            className="space-y-5"
+            className="space-y-4  sm:space-y-5"
           >
             {/* Email */}
             <div>
               <Label
                 htmlFor="email"
-                className="font-sans font-medium text-slate-700 dark:text-slate-300"
+                className="font-sans text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 Email Address
               </Label>
@@ -304,7 +328,7 @@ const Register = () => {
 
             <Button
               type="submit"
-              className="w-full mt-4"
+              className="w-full mt-2 h-11 font-semibold shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -317,6 +341,22 @@ const Register = () => {
               )}
             </Button>
           </form>
+
+          <div className="mt-5">
+            <div className="relative flex items-center">
+              <div className="flex-grow border-t border-slate-200 dark:border-slate-700" />
+
+              <span className="mx-4 text-sm text-slate-500 dark:text-slate-400">
+                OR
+              </span>
+
+              <div className="flex-grow border-t border-slate-200 dark:border-slate-700" />
+            </div>
+
+            <GoogleSignInButton
+              onSuccess={handleGoogleSuccess}
+            />
+          </div>
 
           <AuthFooter
             text="Already have an account?"

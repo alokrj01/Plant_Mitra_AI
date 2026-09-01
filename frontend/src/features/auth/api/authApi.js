@@ -28,6 +28,17 @@ export async function login({ email, password }) {
   return response.data;
 }
 
+export async function googleLogin(idToken) {
+  const response = await api.post(
+    "/api/v1/auth/google",
+    {
+      id_token: idToken,
+    },
+  );
+
+  return response.data;
+}
+
 export async function getMe() {
   const response = await api.get("/api/v1/auth/me");
 
@@ -50,6 +61,33 @@ export async function logout(refreshToken) {
     "/api/v1/auth/logout",
     {
       refresh_token: refreshToken,
+    },
+  );
+
+  return response.data;
+}
+
+
+export async function forgotPassword(email) {
+  const response = await api.post(
+    "/api/v1/auth/forgot-password",
+    {
+      email,
+    },
+  );
+
+  return response.data;
+}
+
+export async function resetPassword({
+  token,
+  newPassword,
+}) {
+  const response = await api.post(
+    "/api/v1/auth/reset-password",
+    {
+      token,
+      new_password: newPassword,
     },
   );
 

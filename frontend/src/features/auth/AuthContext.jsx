@@ -11,6 +11,7 @@ import { setAuthenticationFailureHandler } from "./authEvents.js";
 import {
   getMe,
   login as loginRequest,
+  googleLogin as googleLoginRequest,
   logout as logoutRequest,
   register as registerRequest,
 } from "./api/authApi.js";
@@ -106,6 +107,27 @@ export function AuthProvider({ children }) {
     [loadCurrentUser],
   );
 
+  const googleLogin = useCallback(
+  async (idToken) => {
+    const tokens = await googleLoginRequest(idToken);
+
+    tokenStorage.setTokens(tokens);
+
+    const currentUser = await loadCurrentUser();
+
+    if (!currentUser) {
+      tokenStorage.clearTokens();
+
+      throw new Error(
+        "Unable to load authenticated user.",
+      );
+    }
+
+    return currentUser;
+  },
+  [loadCurrentUser],
+  );
+
   const register = useCallback(
     async ({ email, password }) => {
       return registerRequest({
@@ -135,6 +157,7 @@ export function AuthProvider({ children }) {
       isAuthenticated,
       isInitializing,
       login,
+      googleLogin,
       register,
       logout,
     }),
@@ -143,6 +166,7 @@ export function AuthProvider({ children }) {
       isAuthenticated,
       isInitializing,
       login,
+      googleLogin,
       register,
       logout,
     ],
