@@ -5,6 +5,7 @@ import {
   Route,
 } from "react-router-dom";
 
+import LandingPage from "./pages/LandingPage.jsx"
 import Login from "./components/Login.jsx";
 import Register from "./components/Register.jsx";
 import ForgotPassword from "./components/ForgotPassword.jsx";
@@ -19,8 +20,11 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public routes */}
+          <Route path="/" element={<LandingPage />} />
+
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
           <Route
             path="/forgot-password"
             element={<ForgotPassword />}
@@ -30,7 +34,6 @@ function App() {
             path="/reset-password"
             element={<ResetPassword />}
           />
-          <Route path="/" element={<Dashboard />} />
 
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
