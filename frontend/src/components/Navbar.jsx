@@ -227,6 +227,30 @@ const Navbar = () => {
           <div className="hidden shrink-0 items-center gap-1.5 md:flex lg:gap-2">
             {isAuthenticated ? (
               <>
+              {/* Dashboard */}
+              <Link
+                to="/dashboard"
+                onClick={() => setMobileOpen(false)}
+                className="
+                  rounded-full
+                  px-3
+                  py-1.5
+                  text-xs
+                  font-semibold
+                  text-slate-700
+                  transition-all
+                  duration-200
+                  hover:bg-emerald-50
+                  hover:text-emerald-700
+                  dark:text-slate-300
+                  dark:hover:bg-emerald-950/30
+                  dark:hover:text-emerald-400
+                  lg:px-3.5
+                  lg:text-sm"
+              >
+                  Dashboard
+              </Link>
+
                 {/* User Profile */}
                 <div className="group relative">
                   <button
@@ -555,6 +579,38 @@ const Navbar = () => {
 
               {/* Mobile Logged-in Actions */}
               {isAuthenticated && (
+                <>
+                {/* dashboard */}
+                <Link
+                 to="/dashboard"
+                 onClick={() => setMobileOpen(false)}
+                 className="
+                   mt-1
+                   flex
+                   w-full
+                   items-center
+                   justify-center
+                   rounded-xl
+                   bg-emerald-600
+                   px-3
+                   py-2.5
+                   text-sm
+                   font-semibold
+                   text-white
+                   shadow-md
+                   shadow-emerald-600/20
+                   transition-all
+                   duration-200
+                   hover:bg-emerald-500
+                   dark:bg-emerald-500
+                   dark:text-slate-950
+                   dark:hover:bg-emerald-400
+                   "
+                 >
+                  Dashboard
+                </Link>
+
+                {/* Logout */}
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -585,6 +641,7 @@ const Navbar = () => {
                   <LogOut className="h-4 w-4" />
                   Logout
                 </button>
+                </>
               )}
             </nav>
           </div>
