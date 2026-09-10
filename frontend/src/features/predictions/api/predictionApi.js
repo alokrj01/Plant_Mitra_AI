@@ -60,3 +60,21 @@ export async function submitPredictionFeedback(
 
   return response.data;
 }
+
+export async function askPlantDoctor(
+  predictionId,
+  question,
+) {
+  const response = await api.post(
+    "/api/v1/ai/plant-doctor",
+    {
+      prediction_id: predictionId,
+      question,
+    },
+    {
+      timeout: 60000,
+    },
+  );
+
+  return response.data;
+}

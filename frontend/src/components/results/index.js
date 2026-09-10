@@ -3,3 +3,4 @@ export { default as AnalysisContext } from "./AnalysisContext";
 export { default as TreatmentPlan } from "./TreatmentPlan";
 export { default as ResultsLoading } from "./ResultsLoading";
 export { default as EmptyResults } from "./EmptyResults";
+export { default as PlantDoctor } from "./PlantDoctor";

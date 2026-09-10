@@ -1,9 +1,8 @@
 import torch
-from sqlalchemy.orm import Session
-
+from config.mappings import text_to_db_mapping
 from loader import get_models
 from models import Disease, Prediction, User
-from config.mappings import text_to_db_mapping
+from sqlalchemy.orm import Session
 
 
 def predict_text(

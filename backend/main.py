@@ -1,21 +1,20 @@
-from fastapi import FastAPI, UploadFile, File, Depends
-from pydantic import BaseModel, Field, field_validator
-from fastapi.middleware.cors import CORSMiddleware
-
-from services.text_service import predict_text
-from services.image_service import predict_image
-from routers.auth import router as auth_router
-from routers.admin import router as admin_router
-from routers.predictions import router as predictions_router
-
-from dependencies.auth import get_current_user_optional
-from models import User
-
-from sqlalchemy.orm import Session
-from database import get_db
-
 from contextlib import asynccontextmanager
+
+from database import get_db
+from dependencies.auth import get_current_user_optional
+from fastapi import Depends, FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from loader import initialize_models
+from models import User
+from pydantic import BaseModel, Field, field_validator
+from routers.admin import router as admin_router
+from routers.ai_plant_doctor import router as ai_plant_doctor_router
+from routers.auth import router as auth_router
+from routers.predictions import router as predictions_router
+from services.image_service import predict_image
+from services.text_service import predict_text
+from sqlalchemy.orm import Session
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -38,6 +37,7 @@ app = FastAPI(
 app.include_router(auth_router)
 app.include_router(admin_router)
 app.include_router(predictions_router)
+app.include_router(ai_plant_doctor_router)
 
 #Middleware for CORS(cross origin resource sharing)
 app.add_middleware(

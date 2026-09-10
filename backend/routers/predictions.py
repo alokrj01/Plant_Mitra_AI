@@ -1,16 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.orm import Session
-
 from database import get_db
 from dependencies.auth import get_current_user
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from models import Prediction, PredictionFeedback, User
 from schemas.prediction import (
-  PredictionFeedbackRequest,
-  PredictionFeedbackResponse,
-  PredictionHistoryResponse,
-  PredictionResponse,
+    PredictionFeedbackRequest,
+    PredictionFeedbackResponse,
+    PredictionHistoryResponse,
+    PredictionResponse,
 )
-
+from sqlalchemy.orm import Session
 
 router = APIRouter(
     prefix="/api/v1/predictions",
@@ -52,8 +50,33 @@ def get_prediction_history(
         .all()
     )
 
+    items = []
+
+    for prediction in predictions:
+        feedback = (
+            db.query(PredictionFeedback)
+            .filter(
+                PredictionFeedback.prediction_id == prediction.id,
+                PredictionFeedback.user_id == current_user.id,
+            )
+            .first()
+        )
+
+        items.append(
+            PredictionResponse(
+                id=prediction.id,
+                prediction_type=prediction.prediction_type,
+                predicted_class=prediction.predicted_class,
+                confidence=prediction.confidence,
+                input_text=prediction.input_text,
+                disease_id=prediction.disease_id,
+                created_at=prediction.created_at,
+                feedback=feedback.feedback if feedback else None,
+            )
+        )
+
     return PredictionHistoryResponse(
-        items=predictions,
+        items=items,
         page=page,
         page_size=page_size,
         total=total,

@@ -12,6 +12,8 @@ class Settings(BaseSettings):
 
   GOOGLE_CLIENT_ID: str
 
+  GEMINI_API_KEY:str
+
   RESEND_API_KEY: str
   EMAIL_FROM: str
   FRONTEND_URL: str

@@ -1,18 +1,18 @@
 from datetime import datetime, timezone
 
+from database import Base
 from sqlalchemy import (
+    JSON,
     Boolean,
     Column,
     DateTime,
+    Float,
+    ForeignKey,
     Integer,
     String,
-    JSON,
-    ForeignKey,
-    Float,
     UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
-from database import Base
 
 
 class User(Base):

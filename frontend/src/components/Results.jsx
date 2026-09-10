@@ -5,7 +5,8 @@ import {
   AnalysisContext,
   TreatmentPlan,
   ResultsLoading,
-  EmptyResults
+  EmptyResults,
+  PlantDoctor,
 } from "./results";
 
 import { submitPredictionFeedback } from "../features/predictions/api/predictionApi.js";
@@ -32,9 +33,9 @@ const Results = ({ results, isLoading }) => {
 
   // Helper to convert "98.50%" string to 98.5 number
   const confidenceValue =
-  typeof results?.confidence === "string"
-    ? parseFloat(results.confidence)
-    : results?.confidence ?? 0;
+    typeof results?.confidence === "string"
+      ? parseFloat(results.confidence)
+      : results?.confidence ?? 0;
 
   const handleFeedback = async (value) => {
     if (!results?.prediction_id || feedbackLoading || feedback) {
@@ -64,11 +65,11 @@ const Results = ({ results, isLoading }) => {
   };
 
   if (isLoading) {
-  return <ResultsLoading />;
+    return <ResultsLoading />;
   }
 
   if (!results) {
-  return <EmptyResults />;
+    return <EmptyResults />;
   }
 
   // Determine vibes based on healthy vs diseased
@@ -76,29 +77,37 @@ const Results = ({ results, isLoading }) => {
 
   return (
     <div ref={resultsRef} className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
-      
+
       {/* --- SECTION 1: AI DIAGNOSIS HEADER --- */}
       <DiagnosisCard
-      disease={results.disease}
-      confidence={confidenceValue}
-      severity={results.severity}
-      isHealthy={isHealthy} 
+        disease={results.disease}
+        confidence={confidenceValue}
+        severity={results.severity}
+        isHealthy={isHealthy}
       />
 
       {/* --- SECTION 2: DESCRIPTION & CONTEXT --- */}
       <AnalysisContext
-      type={results.type}
-      description={results.description}
-      input={results.input} 
+        type={results.type}
+        description={results.description}
+        input={results.input}
       />
 
       {/* --- SECTION 3: TREATMENT RECOMMENDATIONS --- */}
       <TreatmentPlan
-      isHealthy={isHealthy}
-      treatment={results.treatment} 
+        isHealthy={isHealthy}
+        treatment={results.treatment}
       />
 
-            {/* --- SECTION 4: PREDICTION FEEDBACK --- */}
+      {/* --- SECTION 4: AI PLANT DOCTOR --- */}
+      {results.prediction_id && (
+        <PlantDoctor
+          predictionId={results.prediction_id}
+          disease={results.disease}
+        />
+      )}
+
+      {/* --- SECTION 5: PREDICTION FEEDBACK --- */}
       {results.prediction_id && (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
           <div className="text-center">
@@ -115,11 +124,10 @@ const Results = ({ results, isLoading }) => {
                 type="button"
                 onClick={() => handleFeedback("correct")}
                 disabled={feedbackLoading || feedback !== null}
-                className={`inline-flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-medium transition ${
-                  feedback === "correct"
+                className={`inline-flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-medium transition ${feedback === "correct"
                     ? "border-green-500 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400"
                     : "border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                } disabled:cursor-not-allowed disabled:opacity-60`}
+                  } disabled:cursor-not-allowed disabled:opacity-60`}
               >
                 <ThumbsUp size={18} />
                 Correct
@@ -129,11 +137,10 @@ const Results = ({ results, isLoading }) => {
                 type="button"
                 onClick={() => handleFeedback("incorrect")}
                 disabled={feedbackLoading || feedback !== null}
-                className={`inline-flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-medium transition ${
-                  feedback === "incorrect"
+                className={`inline-flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-medium transition ${feedback === "incorrect"
                     ? "border-red-500 bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400"
                     : "border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                } disabled:cursor-not-allowed disabled:opacity-60`}
+                  } disabled:cursor-not-allowed disabled:opacity-60`}
               >
                 <ThumbsDown size={18} />
                 Incorrect
