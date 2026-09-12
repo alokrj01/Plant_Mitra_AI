@@ -1,3 +1,5 @@
+from config.settings import get_settings
+
 from contextlib import asynccontextmanager
 
 from database import get_db
@@ -39,10 +41,12 @@ app.include_router(admin_router)
 app.include_router(predictions_router)
 app.include_router(ai_plant_doctor_router)
 
+settings = get_settings()
+
 #Middleware for CORS(cross origin resource sharing)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=[settings.FRONTEND_URL],  
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers

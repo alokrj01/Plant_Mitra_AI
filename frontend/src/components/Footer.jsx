@@ -80,7 +80,7 @@ const Footer = () => {
 
             {/* CTA */}
             <Link
-              to="/register"
+              to="/dashboard"
               className="mt-7 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 transition-all duration-200 hover:bg-emerald-500 hover:shadow-emerald-500/20"
             >
               Start Analyzing

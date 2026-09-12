@@ -100,7 +100,7 @@ def login(
             detail="Invalid email or password.",
         )
 
-    if not verify_password(
+    if not user.password_hash or not verify_password(
         form_data.password,
         user.password_hash,
     ):
@@ -370,6 +370,10 @@ def reset_password(
     )
 
     reset_token.used_at = now
+
+    for refresh_token in user.refresh_tokens:
+        if refresh_token.revoked_at is None:
+            refresh_token.revoked_at = now
 
     try:
         db.commit()

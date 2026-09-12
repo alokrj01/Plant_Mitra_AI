@@ -127,6 +127,13 @@ def get_refresh_token_record(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    if refresh_record.user_id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     if refresh_record.revoked_at is not None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

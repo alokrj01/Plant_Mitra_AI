@@ -113,6 +113,32 @@ Upload a plant leaf image and receive:
 
 Describe visible symptoms in natural language and receive an AI-assisted disease prediction using a transformer-based NLP model.
 
+## 👤 User Experience & History
+
+### 🔐 Authentication
+
+Secure authentication allows users to create accounts and access personalized features.
+
+### 📚 Prediction History
+
+Authenticated users can review their previous predictions through a dedicated history interface with pagination and detailed prediction views.
+
+### 💬 Prediction Feedback
+
+Users can provide feedback on saved predictions to indicate whether the prediction was helpful.
+
+### 🎨 Modern Responsive UI
+
+The frontend provides a responsive interface with:
+
+* Light and dark mode
+* Responsive desktop and mobile navigation
+* Modern dashboard experience
+* Interactive prediction cards
+* Detailed prediction views
+* Loading and error states
+* Responsive layouts for different screen sizes
+
 ---
 
 ## 🔬 Disease Analysis
@@ -128,6 +154,97 @@ The result layer provides:
 - 💊 Treatment recommendations
 - 🛡 Prevention strategies
 
+## 🤖 AI Plant Health Chatbot
+
+PlantMitra AI includes an interactive chatbot designed to provide conversational assistance for plant health-related queries.
+
+Users can interact with the chatbot to:
+
+* Ask plant health-related questions
+* Describe plant symptoms conversationally
+* Get AI-assisted guidance
+* Ask follow-up questions about plant diseases
+* Understand potential causes and prevention strategies
+* Get general treatment and plant-care guidance
+
+The chatbot complements the image and text prediction systems by providing a conversational interface for plant health assistance.
+
+## 🔐 Authentication & User Accounts
+
+PlantMitra AI includes authentication for features that require persistent user data.
+
+Users can:
+
+* Create an account
+* Log in with email and password
+* Authenticate using Google
+* Access protected user-specific features
+* Log out securely
+* Reset their password
+
+Authentication is handled by the FastAPI backend using token-based authentication.
+
+### Access Model
+
+PlantMitra separates public plant analysis from authenticated user features:
+
+| Feature                 | Access        |
+| ----------------------- | ------------- |
+| Landing Page            | Public        |
+| Plant Disease Detection | Public        |
+| Image Prediction        | Public        |
+| Text Prediction         | Public        |
+| Prediction History      | Authenticated |
+| Prediction Details      | Authenticated |
+| Prediction Feedback     | Authenticated |
+
+This allows users to try the AI detection system without creating an account while requiring authentication when predictions need to be persisted to their personal history.
+
+---
+
+## 📚 Prediction History
+
+Authenticated users can save and review their previous plant disease predictions.
+
+The history system provides:
+
+* Paginated prediction history
+* Image and text prediction identification
+* Prediction confidence
+* Prediction timestamp
+* Original text input when available
+* Feedback status
+* Detailed prediction view
+* Prediction feedback submission
+
+Each user's history is isolated to their own account, and prediction detail and feedback operations enforce ownership at the API level.
+
+Guest predictions can still be performed, but they are not persisted to the server-side prediction history.
+
+### Prediction History Flow
+
+```text
+User
+ │
+ ├── Guest
+ │     │
+ │     └── Run Prediction
+ │             │
+ │             └── View Result
+ │
+ └── Authenticated
+       │
+       └── Run Prediction
+               │
+               ├── View Result
+               │
+               └── Save Prediction
+                       │
+                       ▼
+                 User History
+                       │
+                       └── Prediction Details
+```
 ---
 
 # 🏗️ System Architecture
@@ -387,6 +504,29 @@ VITE_API_URL=https://alokrj-plant-disease-backend.hf.space
 ```
 This allows the same frontend codebase to communicate with either the local development backend or the production API.
 
+## 💬 Conversational AI
+
+In addition to dedicated image and text disease prediction pipelines, PlantMitra AI provides a conversational interface for plant health assistance.
+
+The chatbot is designed as a complementary layer to the prediction system, allowing users to interact with the application using natural-language questions and follow-up queries.
+
+```text
+User Question
+      │
+      ▼
+Conversational AI
+      │
+      ▼
+Plant Health Guidance
+      │
+      ├── Disease Information
+      ├── Symptom Understanding
+      ├── Prevention Guidance
+      └── Plant Care Assistance
+```
+
+The chatbot is intended to complement model-based disease prediction rather than replace the dedicated image and text prediction pipelines.
+
 # 🚀 Getting Started
 ## Prerequisites
 
@@ -424,7 +564,7 @@ backend/
 # 💻 Local Development
 ## 1. Clone the Repository
 ```text
-git clone https://github.com/alokrj01/Plant_Mitra_AI
+git clone https://github.com/alokrj01/Plant_Mitra_AI.git
 cd plant-mitra-ai
 ```
 ## 2. Setup the Backend
@@ -526,19 +666,40 @@ PlantMitra incorporates several practices intended to make the project closer to
 - Separate development and production API configuration
 
 # 📊 Project Highlights
+#### 🔐 Application Features
+
+* User authentication
+* Google authentication
+* Password reset flow
+* Protected user-specific routes
+* Paginated prediction history
+* Prediction detail pages
+* Prediction feedback
+* Ownership-aware API operations
+* Responsive light/dark UI
+
 ### AI Capabilities
-- Image-based disease classification
-- NLP-based symptom classification
-- Confidence-aware predictions
-- Disease information mapping
-- Treatment recommendation system
+
+* Image-based disease classification
+* NLP-based symptom classification
+* Confidence-aware predictions
+* Disease information mapping
+* Treatment recommendation system
+* Conversational AI plant health assistant
+* Natural-language plant health guidance
+* Follow-up question support
+
 ### Backend Engineering
-- FastAPI REST API
-- Modular service architecture
-- SQLAlchemy database layer
-- Pydantic validation
-- Dockerized deployment
-- Reproducible dependency management with uv
+
+* FastAPI REST API
+* Modular service architecture
+* SQLAlchemy database layer
+* Pydantic validation
+* Token-based authentication
+* Protected API routes
+* Dockerized deployment
+* Reproducible dependency management with uv
+
 ### Deployment
 - React frontend deployed separately
 - FastAPI backend containerized with Docker
@@ -557,7 +718,7 @@ Potential future capabilities include:
 - 🌦️ Weather-aware disease risk prediction
 - 📷 Continuous crop monitoring
 - 📈 Disease trend analytics
-- 🤖 AI agricultural assistant
+- 🌦️ Weather-aware conversational recommendations
 - 🧑‍🌾 Personalized treatment plans
 - 📊 Farmer and farm dashboards
 - 🔐 Advanced authentication and authorization
@@ -567,34 +728,117 @@ Potential future capabilities include:
 - ☁️ Scalable cloud infrastructure
 
 # 📸 Application Preview
-## Screenshots
 
-### User Dashboard
-<img src="screenshots/Dashboard.png" alt="User Dashboard" width="800">
-<img src="screenshots/light-mode.png" alt="User Dashboard" width="800">
+## 🏠 Landing Page
 
-### Disease Detection
-<img src="screenshots/disease-detection.png" alt="Disease Detection" width="800">
+The PlantMitra AI landing page introduces the platform, its AI capabilities, and the overall plant health analysis workflow.
+
+<img src="screenshots/Landing-Page/landing-page.png" alt="PlantMitra AI Landing Page" width="900">
+
+---
+
+## 🌱 AI Plant Analysis
+
+### Dashboard
+
+The main dashboard provides access to both image-based and text-based plant disease analysis.
+
+<img src="screenshots/AI-Plant-Analysis/dashboard.png" alt="PlantMitra AI Dashboard" width="900">
+
+### Image Prediction
+
+Users can upload a plant leaf image to analyze potential diseases using the computer vision pipeline.
+
+<img src="screenshots/AI-Plant-Analysis/image.png" alt="Image-based Plant Disease Prediction" width="900">
+
+### Text Prediction
+
+Users can describe plant symptoms in natural language for AI-assisted disease prediction.
+
+<img src="screenshots/AI-Plant-Analysis/text.png" alt="Text-based Plant Disease Prediction" width="900">
 
 ### Prediction Result
-<img src="screenshots/image-prediction.png" alt="Prediction Result" width="800">
-<img src="screenshots/text-prediction.png" alt="Prediction Result" width="800">
 
-### Admin Dashboard
-<img src="screenshots/register.png" alt="Admin Dashboard" width="800">
-<img src="screenshots/login.png" alt="Admin Dashboard" width="800">
+The result interface presents the predicted disease, confidence, disease information, severity, treatment recommendations, and prevention strategies.
 
-### API Documentation
-<img src="screenshots/root.png" alt="FastAPI Swagger Documentation" width="800">
-<img src="screenshots/swagger-ui.png" alt="FastAPI Swagger Documentation" width="800">
+<img src="screenshots/AI-Plant-Analysis/prediction-result.png" alt="Plant Disease Prediction Result" width="900">
 
-### Mobile View
-<img src="screenshots/mobile-view-1.png" alt="Mobile View" width="800">
-<img src="screenshots/mobile-view-2.png" alt="Mobile View" width="800">
+---
+
+## 📚 Prediction History
+
+Authenticated users can review their previously saved plant disease predictions.
+
+### History
+
+The prediction history page provides a paginated view of previous image and text predictions.
+
+<img src="screenshots/Prediction-History/history.png" alt="PlantMitra AI Prediction History" width="900">
+
+### Prediction Details
+
+Users can open an individual prediction to view its details, confidence score, original input, and submit feedback.
+
+<img src="screenshots/Prediction-History/history-detail.png" alt="PlantMitra AI Prediction History Details" width="900">
+
+---
+
+## 🔐 Authentication
+
+PlantMitra AI provides authentication for personalized features such as prediction history.
+
+### Login
+
+<img src="screenshots/Authentication/login.png" alt="PlantMitra AI Login" width="900">
+
+### Register
+
+<img src="screenshots/Authentication/register.png" alt="PlantMitra AI Registration" width="900">
+
+---
+
+## 📱 Responsive Design
+
+The interface is designed to work across desktop and mobile screen sizes.
+
+### Mobile Landing Page
+
+<img src="screenshots/Responsive-Design/mobile-landing.png" alt="PlantMitra AI Mobile Dashboard" width="450">
+
+### Mobile Prediction
+
+<img src="screenshots/Responsive-Design/mobile-pred.png" alt="PlantMitra AI Mobile Prediction" width="450">
+
+### Mobile Result
+
+<img src="screenshots/Responsive-Design/mobile-result.png" alt="PlantMitra AI Mobile Dashboard" width="450">
+
+---
+
+## 🤖 AI Chatbot
+
+The PlantMitra AI chatbot provides an interactive interface for users to ask plant health-related questions and receive AI-assisted guidance.
+
+<img src="screenshots/Chat-bot/chatbot.png" alt="PlantMitra AI Chatbot" width="900">
+
+---
+
+You can also explore the deployed API documentation:
+
+**[🌐 Open PlantMitra AI API Documentation](https://alokrj-plant-disease-backend.hf.space/docs)**
+
+**[🌐 Open PlantMitra AI Live Demo](https://plantmitraai.vercel.app)**
+
+**[💻 View PlantMitra AI on GitHub](https://github.com/alokrj01/ai-plant-doc)**
+
+---
+
 
 # 📁 Repository Structure
-```
+
+```text
 Plant-Mitra-AI/
+
 │
 ├── .github/
 │   └── workflows/
@@ -620,6 +864,25 @@ Plant-Mitra-AI/
 ├── frontend/
 │   ├── public/
 │   ├── src/
+│   │   ├── components/
+│   │   │   ├── auth/
+│   │   │   ├── dashboard/
+│   │   │   ├── history/
+│   │   │   ├── prediction-history/
+│   │   │   ├── prediction/
+│   │   │   ├── results/
+│   │   │   └── Navbar.jsx
+│   │   │
+│   │   ├── features/
+│   │   │   ├── auth/
+│   │   │   └── predictions/
+│   │   │
+│   │   ├── hooks/
+│   │   ├── lib/
+│   │   ├── pages/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   │
 │   ├── package.json
 │   ├── package-lock.json
 │   └── vite.config.js
@@ -627,6 +890,8 @@ Plant-Mitra-AI/
 ├── .gitignore
 └── README.md
 ```
+
+The frontend follows a component-oriented structure where page-level components handle application state and data flow, while reusable UI sections are organized into feature-specific component directories.
 
 # 🧩 Engineering Decisions
 ### Why FastAPI?

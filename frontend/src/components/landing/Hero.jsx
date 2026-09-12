@@ -154,7 +154,7 @@ const Hero = () => {
             {/* CTA */}
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
-                to="/register"
+                to="/dashboard"
                 className="
                   group
                   inline-flex

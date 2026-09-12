@@ -139,6 +139,7 @@ const AILimitations = () => {
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2">
+            
             {/* Helpful input */}
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5 dark:border-emerald-900/50 dark:bg-emerald-950/20">
               <div className="flex items-center gap-2">

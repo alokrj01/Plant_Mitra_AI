@@ -13,6 +13,8 @@ import ResetPassword from "./components/ResetPassword.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 import ProtectedRoute from "./features/auth/ProtectedRoute.jsx";
 import { Toaster } from "./components/ui/Toaster.jsx";
+import HistoryPage from "./pages/HistoryPage.jsx";
+import PredictionHistoryDetailPage from "./pages/PredictionHistoryDetailPage.jsx";
 
 function App() {
   return (
@@ -21,6 +23,11 @@ function App() {
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<LandingPage />} />
+
+          <Route
+              path="/dashboard"
+              element={<Dashboard />}
+          />
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -37,11 +44,16 @@ function App() {
 
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
-
             <Route
-              path="/dashboard"
-              element={<Dashboard />}
+               path="/history"
+               element={<HistoryPage />}
             />
+
+             <Route
+                path="/history/:predictionId"
+                element={<PredictionHistoryDetailPage />}
+             />
+             
           </Route>
         </Routes>
 
