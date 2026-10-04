@@ -1,15 +1,15 @@
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import Hero from "../components/landing/Hero";
-import AnalysisMethods from "../components/landing/AnalysisMethods";
-import HowItWorks from "../components/landing/HowItWorks";
-import Features from "../components/landing/Features";
-import ProductPreview from "../components/landing/ProductPreview";
-import SupportedPlants from "../components/landing/SupportedPlants";
-import Technology from "../components/landing/Technology";
-import AILimitations from "../components/landing/AILimitations";
-import FAQ from "../components/landing/FAQ";
-import FinalCTA from "../components/landing/FinalCTA";
+import Navbar from "../components/common/Navbar";
+import Footer from "../components/common/Footer";
+import Hero from "../features/landing/components/Hero";
+import AnalysisMethods from "../features/landing/components/AnalysisMethods";
+import HowItWorks from "../features/landing/components/HowItWorks";
+import Features from "../features/landing/components/Features";
+import ProductPreview from "../features/landing/components/ProductPreview";
+import SupportedPlants from "../features/landing/components/SupportedPlants";
+import Technology from "../features/landing/components/Technology";
+import AILimitations from "../features/landing/components/AILimitations";
+import FAQ from "../features/landing/components/FAQ";
+import FinalCTA from "../features/landing/components/FinalCTA";
 
 const LandingPage = () => {
   return (

@@ -6,12 +6,12 @@ import {
 } from "react-router-dom";
 
 import LandingPage from "./pages/LandingPage.jsx"
-import Login from "./components/Login.jsx";
-import Register from "./components/Register.jsx";
-import ForgotPassword from "./components/ForgotPassword.jsx";
-import ResetPassword from "./components/ResetPassword.jsx";
-import Dashboard from "./components/Dashboard.jsx";
-import ProtectedRoute from "./features/auth/ProtectedRoute.jsx";
+import Login from "./pages/LoginPage.jsx";
+import Register from "./pages/RegisterPage.jsx";
+import ForgotPassword from "./pages/ForgotPasswordPage.jsx";
+import ResetPassword from "./pages/ResetPasswordPage.jsx";
+import Dashboard from "./pages/DashboardPage.jsx";
+import ProtectedRoute from "./layouts/ProtectedRoute.jsx";
 import { Toaster } from "./components/ui/Toaster.jsx";
 import HistoryPage from "./pages/HistoryPage.jsx";
 import PredictionHistoryDetailPage from "./pages/PredictionHistoryDetailPage.jsx";

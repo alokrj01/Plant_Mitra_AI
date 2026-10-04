@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 
-import Navbar from "../components/Navbar.jsx";
+import Navbar from "../components/common/Navbar.jsx";
 
-import HistoryHeader from "../components/history/HistoryHeader.jsx";
-import PredictionCard from "../components/history/PredictionCard.jsx";
-import HistoryEmptyState from "../components/history/HistoryEmptyState.jsx";
-import HistoryPagination from "../components/history/HistoryPagination.jsx";
+import HistoryHeader from "../features/history/components/HistoryHeader.jsx";
+import PredictionCard from "../features/history/components/PredictionCard.jsx";
+import HistoryEmptyState from "../features/history/components/HistoryEmptyState.jsx";
+import HistoryPagination from "../features/history/components/HistoryPagination.jsx";
 
 import {
   getPredictionHistory,

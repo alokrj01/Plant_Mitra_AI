@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import Navbar from "../components/Navbar.jsx";
+import Navbar from "../components/common/Navbar.jsx";
 
-import PredictionDetailHeader from "../components/prediction-history/PredictionDetailHeader.jsx";
-import DiagnosisCard from "../components/prediction-history/DiagnosisCard.jsx";
-import PredictionInput from "../components/prediction-history/PredictionInput.jsx";
-import PredictionFeedback from "../components/prediction-history/PredictionFeedback.jsx";
-import PredictionDetailSkeleton from "../components/prediction-history/PredictionDetailSkeleton.jsx";
+import PredictionDetailHeader from "../features/history/components/PredictionDetailHeader.jsx";
+import DiagnosisCard from "../features/history/components/DiagnosisCard.jsx";
+import PredictionInput from "../features/history/components/PredictionInput.jsx";
+import PredictionFeedback from "../features/history/components/PredictionFeedback.jsx";
+import PredictionDetailSkeleton from "../features/history/components/PredictionDetailSkeleton.jsx";
 
 import {
   getPrediction,

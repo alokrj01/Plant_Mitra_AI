@@ -16,3 +16,5 @@ backend/test/
 #large files
 /backend/Models/
 *.pyc
+
+.vscode/
